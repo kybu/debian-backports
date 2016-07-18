@@ -12,14 +12,28 @@ property :nproc, Fixnum, default: `nproc`.to_i
 action :run do
   pkg_name = name
   pkg_dir = "/root/deb-packages/#{pkg_name}"
+  debian_release = node['debian-backports']['sources'].split(' ')[1]
 
-  bash "#{name} - getting the source package" do
+  bash "#{name} - getting the source package using .dsc" do
     code <<BLA
 rm -rf #{pkg_dir}
 mkdir -p #{pkg_dir}
 cd #{pkg_dir}
 dget #{dsc_url}
 BLA
+
+    not_if { dsc_url.nil? || dsc_url.empty? }
+  end
+
+  bash "#{name} - getting the source package" do
+    code <<BLA
+rm -rf #{pkg_dir}
+mkdir -p #{pkg_dir}
+cd #{pkg_dir}
+apt-get source #{pkg_name}/#{debian_release}
+BLA
+
+    not_if { !dsc_url.nil? && !dsc_url.empty? }
   end
 
   bash "#{name} - install the source package build dependencies" do
