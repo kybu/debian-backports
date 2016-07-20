@@ -28,10 +28,12 @@ action :run do
   directory tmp_dir do
     action :delete
     recursive true
+    not_if { node.default['debian-backports']['already-installed'] }
   end
 
   directory "#{tmp_dir} - create" do
     path tmp_dir
+    not_if { node.default['debian-backports']['already-installed'] }
   end
 
   ruby_block "Copy #{pkg_name} deb files" do
@@ -43,22 +45,26 @@ action :run do
         rf.run_action :create
       end
     end
+    not_if { node.default['debian-backports']['already-installed'] }
   end
 
   aptly_repo '-force-replace debian-backports' do
     action :add
     directory tmp_dir
+    not_if { node.default['debian-backports']['already-installed'] }
   end
 
   aptly_publish 'debian-backports' do
     action :create
     type 'repo'
     prefix ' debian-backports'
+    not_if { node.default['debian-backports']['already-installed'] }
   end
 
   aptly_publish '-force-overwrite jessie' do
     action :update
     prefix 'debian-backports'
+    not_if { node.default['debian-backports']['already-installed'] }
   end
 
   bash 'apt-get update' do
@@ -67,15 +73,16 @@ apt-get -qq update \
   -o Dir::Etc::sourcelist="sources.list.d/debian-backports.list" \
   -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0"
 BLA
+    not_if { node.default['debian-backports']['already-installed'] }
   end
 
   bash 'apt-get upgrade' do
     code 'apt-get -qq upgrade'
-    only_if { install == :upgrade}
+    only_if { !node.default['debian-backports']['already-installed'] && install == :upgrade}
   end
 
   bash 'apt-get dist-upgrade' do
     code 'apt-get -qq dist-upgrade'
-    only_if { install == :dist_upgrade}
+    only_if { !node.default['debian-backports']['already-installed'] && install == :dist_upgrade}
   end
 end

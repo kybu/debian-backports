@@ -14,6 +14,16 @@ action :run do
   pkg_dir = "/root/deb-packages/#{pkg_name}"
   debian_release = node['debian-backports']['sources'].split(' ')[1]
 
+  node.default['debian-backports']['already-installed'] = false
+  pkgnames=`apt-cache pkgnames #{pkg_name}`.chop.each_line do |n|
+    if Dir["/var/lib/debian-backports/**/#{n}_*.deb"].size != 0
+      node.default['debian-backports']['already-installed'] = true
+      next
+    end
+  end
+  next if node.default['debian-backports']['already-installed'] == true
+  node.default['debian-backports']['already-installed'] = false
+
   bash "#{name} - getting the source package using .dsc" do
     code <<BLA
 rm -rf #{pkg_dir}

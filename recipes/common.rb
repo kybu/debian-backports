@@ -34,3 +34,6 @@ bash 'apt-get update after sources list change' do
 end
 
 package 'build-essential'
+
+include_recipe 'debian-backports::aptly-local-repo'
+include_recipe 'debian-backports::must-have'
