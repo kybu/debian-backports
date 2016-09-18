@@ -10,7 +10,8 @@
   "dependencies": {
     "aptly": ">= 0.0.0",
     "bsw_gpg": ">= 0.0.0",
-    "line": "~> 0.6.3"
+    "line": "~> 0.6.3",
+    "chef-sugar": ">= 0.0.0"
   },
   "recommendations": {
   },

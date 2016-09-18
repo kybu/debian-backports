@@ -5,6 +5,10 @@ cookbook_file '/etc/profile.d/unsafe_configure.sh' do
   mode '0555'
 end
 
+cookbook_file 'apt-conf-90ignore-release-date' do
+  path '/etc/apt/apt.conf.d/90ignore-release-date'
+end
+
 Dir['/etc/apt/sources.list.d/*']+['/etc/apt/sources.list'].each do |source_list|
   next if source_list == '/etc/apt/sources.list.d/debian-sources.list'
 

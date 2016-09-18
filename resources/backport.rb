@@ -3,6 +3,8 @@ resource_name :backport
 property :dsc_url
 
 property :ignore_dependencies, Symbol, default: :no
+property :verify, Symbol, default: :yes
+property :version, String, default: nil
 
 property :control_file
 property :rules_file
@@ -29,7 +31,7 @@ action :run do
 rm -rf #{pkg_dir}
 mkdir -p #{pkg_dir}
 cd #{pkg_dir}
-dget #{dsc_url}
+dget #{verify == :no ? " -u " : ""} #{dsc_url}
 BLA
 
     not_if { dsc_url.nil? || dsc_url.empty? }
@@ -84,5 +86,12 @@ cd #{pkg_dir}
 cd `ls -d */`
 DEB_BUILD_OPTIONS='nocheck parallel=#{nproc}' FORCE_UNSAFE_CONFIGURE=1 dpkg-buildpackage -uc -us #{ignore_dependencies == :yes ? '-d' : ''}
 BLA
+
+    environment({   DEB_BUILD_MAINT_OPTIONS: 'hardening=-all',
+                    DEB_CFLAGS_MAINT_SET: '-march=ivybridge -g -O2 -ffunction-sections -fdata-sections',
+                    DEB_CXXFLAGS_MAINT_SET: '-march=ivybridge -g -O2 -ffunction-sections -fdata-sections',
+                    DEB_LDFLAGS_SET: '-Wl,--gc-sections',
+                    CROSS_ARCHS: ''})
   end
+
 end

@@ -3,6 +3,8 @@ resource_name :backport_install
 property :dsc_url
 
 property :ignore_dependencies, Symbol, default: :no
+property :verify, Symbol, default: :yes
+property :version, String, default: nil
 property :install, Symbol, default: :upgrade
 
 property :control_file
@@ -11,6 +13,8 @@ property :rules_file
 action :run do
   pkg_name = name
   idep = ignore_dependencies
+  verf = verify
+  vr = version
   ctrl_file = control_file
   rls_file = rules_file
   dsc = dsc_url
@@ -21,6 +25,8 @@ action :run do
   backport name do
     dsc_url dsc
     ignore_dependencies idep
+    verify verf
+    version vr
     control_file(ctrl_file)
     rules_file(rls_file)
   end

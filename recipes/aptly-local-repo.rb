@@ -38,3 +38,7 @@ end
 cookbook_file 'apt-debian-backports-source.list' do
   path '/etc/apt/sources.list.d/debian-backports.list'
 end
+
+cookbook_file 'apt-preferences-debian-backports' do
+  path '/etc/apt/preferences.d/debian-backports'
+end
