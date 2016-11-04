@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+
+raise 'Please, setup a docker volume into /x' if not Dir.exists? '/x'
+
+require 'fileutils'
+include FileUtils
+
+if Dir.exists? '/x/kitchen'
+  rm_rf '/x/kitchen'
+end
+
+system <<BLA
+set -e
+cd /x
+knife solo init kitchen && cd kitchen/site-cookbooks 
+git clone https://github.com/kybu/debian-backports.git
+cd debian-backports && berks && berks vendor ..
+echo 'cookbook_path [Dir.pwd+"/site-cookbooks"]' > /x/kitchen/solo.rb
+BLA
