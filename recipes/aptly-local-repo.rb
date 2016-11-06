@@ -1,6 +1,6 @@
 package 'aptly'
 
-pub_key = cookbook_file_contents 'gpg_pub.key', 'debian-backports'
+pub_key = ::File.read(cookbook_file_location('gpg_pub.key', 'debian-backports'))
 bsw_gpg_load_key_from_string 'Import public GPG key' do
   key_contents pub_key
   for_user 'root'
